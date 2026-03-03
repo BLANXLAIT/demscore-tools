@@ -70,6 +70,8 @@ npx tsx demo/generate-views-report.ts
 
 This discovers the latest VIEWS fatalities model run, fetches country-level state-based conflict predictions, and generates an interactive report with a risk map, top-20 bar chart, and forecast detail table.
 
+![VIEWS Conflict Forecast Report](docs/views-demo-report-screenshot.png)
+
 ## UCDP API Access
 
 Request an API token at the [UCDP API docs](https://ucdp.uu.se/apidocs/). Rate limit: 5,000 requests/day.
