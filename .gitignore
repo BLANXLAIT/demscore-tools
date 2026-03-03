@@ -5,3 +5,4 @@ dist/
 .env.local
 coverage/
 demo/report.html
+demo/views-report.html

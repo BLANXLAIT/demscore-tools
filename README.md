@@ -44,7 +44,9 @@ for (const row of response.data) {
 }
 ```
 
-## Demo
+## Demos
+
+### UCDP Conflict Events Report
 
 Generate a visual HTML report from live UCDP conflict data:
 
@@ -56,6 +58,17 @@ UCDP_TOKEN=your-token npx tsx demo/generate-report.ts
 This fetches the last 90 days of GED Candidate events and generates an interactive report with a conflict map, country breakdown, and deadliest events table.
 
 ![UCDP Conflict Events Report](docs/demo-report-screenshot.png)
+
+### VIEWS Conflict Forecast Report
+
+Generate a conflict forecast report from VIEWS prediction data (no API token required):
+
+```bash
+cd demscore-tools
+npx tsx demo/generate-views-report.ts
+```
+
+This discovers the latest VIEWS fatalities model run, fetches country-level state-based conflict predictions, and generates an interactive report with a risk map, top-20 bar chart, and forecast detail table.
 
 ## UCDP API Access
 
