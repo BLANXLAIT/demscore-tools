@@ -400,13 +400,7 @@ td.headline-cell {
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"><\/script>
 <script>
-var DATA = ${JSON.stringify(reportData)};
-
-function esc(str) {
-    var div = document.createElement('div');
-    div.textContent = str || '';
-    return div.innerHTML;
-}
+var DATA = ${JSON.stringify(reportData).replace(/</g, "\\u003c")};
 
 // Subtitle
 document.getElementById('subtitle').textContent =
