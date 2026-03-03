@@ -43,6 +43,8 @@ const client = new UcdpClient({ token });
 
 console.log(`Fetching UCDP candidate events since ${startDateStr}...`);
 
+async function main() {
+
 const events: GedEventRaw[] = [];
 for await (const event of client.getCandidateEventsAll({ StartDate: startDateStr })) {
     events.push(event);
@@ -601,3 +603,7 @@ try {
 } catch {
     console.log(`Could not open browser automatically. Open ${outputPath} manually.`);
 }
+
+} // end main
+
+main();
