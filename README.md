@@ -55,6 +55,8 @@ UCDP_TOKEN=your-token npx tsx demo/generate-report.ts
 
 This fetches the last 90 days of GED Candidate events and generates an interactive report with a conflict map, country breakdown, and deadliest events table.
 
+![UCDP Conflict Events Report](docs/demo-report-screenshot.png)
+
 ## UCDP API Access
 
 Request an API token at the [UCDP API docs](https://ucdp.uu.se/apidocs/). Rate limit: 5,000 requests/day.
