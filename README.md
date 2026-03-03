@@ -46,6 +46,19 @@ for (const row of response.data) {
 
 ## Demos
 
+### Combined Conflict Intelligence Brief
+
+Generate a combined report joining UCDP actuals with VIEWS forecasts for trajectory analysis:
+
+```bash
+cd demscore-tools
+UCDP_TOKEN=your-token npx tsx demo/generate-combined-report.ts
+```
+
+This joins recent conflict events (last 90 days) with forward-looking fatality predictions (36 months) on Gleditsch-Ward country codes, classifying each situation as escalating, de-escalating, stable, latent risk, or unpredicted. The report includes a risk map, dual bar chart, trajectory table, and early warning panel.
+
+![Conflict Intelligence Brief](docs/combined-report-screenshot.png)
+
 ### UCDP Conflict Events Report
 
 Generate a visual HTML report from live UCDP conflict data:
