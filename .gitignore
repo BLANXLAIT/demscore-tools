@@ -6,3 +6,4 @@ dist/
 coverage/
 demo/report.html
 demo/views-report.html
+demo/combined-report.html
