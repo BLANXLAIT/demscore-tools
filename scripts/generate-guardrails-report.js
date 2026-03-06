@@ -14,17 +14,23 @@ let report;
 try {
     const raw = readFileSync(INPUT, "utf-8");
     report = JSON.parse(raw);
-} catch {
-    // If JSON report doesn't exist, generate a minimal failure report
+} catch (err) {
+    // If JSON report doesn't exist or is invalid, generate a failure report and exit non-zero
+    let reason = "The guardrails compliance tests may not have run.";
+    if (err && typeof err === "object" && "code" in err && err.code === "ENOENT") {
+        reason = "The guardrails report JSON file was not found.";
+    } else if (err instanceof SyntaxError) {
+        reason = "The guardrails report JSON file could not be parsed.";
+    }
     const md = `# Guardrails Compliance Report
 Generated: ${new Date().toISOString()}
 Status: **FAIL**
 
-No test results found. The guardrails compliance tests may not have run.
+${reason}
 `;
     writeFileSync(OUTPUT, md);
-    console.log(`Wrote fallback report to ${OUTPUT}`);
-    process.exit(0);
+    console.error(`Wrote fallback report to ${OUTPUT}: ${reason}`);
+    process.exit(1);
 }
 
 const suites = report.testResults ?? [];

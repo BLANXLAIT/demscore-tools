@@ -1,13 +1,10 @@
 import { UcdpClient, type GedEventFilters, type GedEventRaw } from "@demscore/ucdp";
-import {
-    UCDP_CITATION,
-    formatResponseText,
-} from "../constants.js";
+import { formatResponseText } from "../constants.js";
 
 export async function handleConflictEvents(
     args: Record<string, unknown>,
     client: UcdpClient,
-): Promise<{ content: Array<{ type: string; text: string }>; metadata: Record<string, unknown> }> {
+): Promise<{ content: Array<{ type: string; text: string }> }> {
     const filters: GedEventFilters = {};
     if (args.country) filters.Country = args.country as number[];
     if (args.start_date) filters.StartDate = args.start_date as string;
@@ -58,13 +55,6 @@ export async function handleConflictEvents(
                 ),
             },
         ],
-        metadata: {
-            dataType: "HISTORICAL OBSERVATIONS",
-            caveats: envelope.provenance.caveats,
-            required_citation: UCDP_CITATION,
-            releaseStatus: envelope.provenance.releaseStatus,
-            version: envelope.provenance.version,
-        },
     };
 }
 

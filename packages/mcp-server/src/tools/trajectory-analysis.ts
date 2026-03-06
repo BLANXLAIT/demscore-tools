@@ -11,7 +11,7 @@ export async function handleTrajectoryAnalysis(
     args: Record<string, unknown>,
     ucdpClient: UcdpClient,
     viewsClient: ViewsClient,
-): Promise<{ content: Array<{ type: string; text: string }>; metadata: Record<string, unknown> }> {
+): Promise<{ content: Array<{ type: string; text: string }> }> {
     const iso = args.country_iso as string;
     const gwno = args.gwno as number | undefined;
 
@@ -35,11 +35,21 @@ export async function handleTrajectoryAnalysis(
     // Compute trajectory heuristic
     const trajectory = computeTrajectory(ucdpEvents, viewsEnvelope.data);
 
+    const hasUcdp = ucdpEvents.length > 0;
+    const citations = [
+        ...(hasUcdp ? [UCDP_CITATION] : []),
+        VIEWS_CITATION,
+        TOOLKIT_CITATION,
+    ];
+    const versionLabel = hasUcdp
+        ? `UCDP ${ucdpVersion} + VIEWS ${viewsEnvelope.provenance.version}`
+        : `VIEWS ${viewsEnvelope.provenance.version}`;
+
     const textBlock = formatResponseText({
         toolName: "get_trajectory_analysis",
         dataType: "DERIVED HEURISTIC",
         source: "demscore-tools trajectory analysis",
-        version: `UCDP ${ucdpVersion} + VIEWS ${viewsEnvelope.provenance.version}`,
+        version: versionLabel,
         interpretationRules: [
             "Trajectory labels (escalating/de-escalating/stable) are HEURISTIC COMPUTATIONS by this toolkit.",
             "These are NOT official UCDP or VIEWS assessments.",
@@ -54,7 +64,7 @@ export async function handleTrajectoryAnalysis(
             "This analysis does not account for policy changes, peace processes, or other intervening factors.",
             ...viewsEnvelope.provenance.caveats.slice(0, 2),
         ],
-        citations: [UCDP_CITATION, VIEWS_CITATION, TOOLKIT_CITATION],
+        citations,
     });
 
     return {
@@ -82,21 +92,12 @@ export async function handleTrajectoryAnalysis(
                 ),
             },
         ],
-        metadata: {
-            dataType: "DERIVED HEURISTIC",
-            caveats: [
-                "Trajectory labels are heuristic, not official assessments.",
-                "Historical and forecast data use different methodologies.",
-                "Do not mix observed and predicted values arithmetically.",
-            ],
-            required_citation: `${UCDP_CITATION} AND ${VIEWS_CITATION} AND ${TOOLKIT_CITATION}`,
-        },
     };
 }
 
 interface TrajectoryResult {
     classification: "escalating" | "de-escalating" | "stable" | "insufficient-data";
-    confidence: "low" | "medium" | "high";
+    confidence: "low" | "medium";
     historicalTrend: string;
     forecastTrend: string;
 }
@@ -134,10 +135,10 @@ function computeTrajectory(
         const earlyMonths = forecasts.slice(0, mid);
         const lateMonths = forecasts.slice(mid);
         const earlyAvg = avg(
-            earlyMonths.map((f) => (f.main_mean as number) ?? 0),
+            earlyMonths.map((f) => toNumber(f.main_mean)),
         );
         const lateAvg = avg(
-            lateMonths.map((f) => (f.main_mean as number) ?? 0),
+            lateMonths.map((f) => toNumber(f.main_mean)),
         );
 
         if (lateAvg > earlyAvg * 1.25) forecastTrend = "escalating";
@@ -174,6 +175,11 @@ function computeTrajectory(
         historicalTrend: `${historicalTrend} (based on ${events.length} events)`,
         forecastTrend: `${forecastTrend} (based on ${forecasts.length} forecast months)`,
     };
+}
+
+function toNumber(value: unknown): number {
+    const n = Number(value);
+    return Number.isFinite(n) ? n : 0;
 }
 
 function avg(values: number[]): number {

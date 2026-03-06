@@ -1,13 +1,10 @@
 import { ViewsClient, type ViewsQueryOptions, type CountryMonthRow } from "@demscore/views";
-import {
-    VIEWS_CITATION,
-    formatResponseText,
-} from "../constants.js";
+import { formatResponseText } from "../constants.js";
 
 export async function handleConflictForecasts(
     args: Record<string, unknown>,
     client: ViewsClient,
-): Promise<{ content: Array<{ type: string; text: string }>; metadata: Record<string, unknown> }> {
+): Promise<{ content: Array<{ type: string; text: string }> }> {
     const options: ViewsQueryOptions = {};
     if (args.iso) options.iso = args.iso as string[];
     if (args.gwno) options.gwno = args.gwno as number[];
@@ -54,12 +51,6 @@ export async function handleConflictForecasts(
                 ),
             },
         ],
-        metadata: {
-            dataType: "PROBABILISTIC FORECAST",
-            caveats: envelope.provenance.caveats,
-            required_citation: VIEWS_CITATION,
-            forecastRun: run,
-        },
     };
 }
 

@@ -95,50 +95,51 @@ function mockViewsClient() {
     } as any;
 }
 
-describe("Response metadata compliance", () => {
-    it("conflict events response includes non-empty caveats", async () => {
+describe("Response provenance compliance (embedded in JSON content)", () => {
+    it("conflict events JSON includes provenance with caveats", async () => {
         const result = await handleConflictEvents({}, mockUcdpClient());
-        expect(result.metadata.caveats).toBeDefined();
-        expect((result.metadata.caveats as string[]).length).toBeGreaterThan(0);
+        const json = JSON.parse(result.content[1].text);
+        expect(json.provenance.caveats).toBeDefined();
+        expect(json.provenance.caveats.length).toBeGreaterThan(0);
     });
 
-    it("conflict events response includes required_citation", async () => {
+    it("conflict events JSON includes provenance with citations", async () => {
         const result = await handleConflictEvents({}, mockUcdpClient());
-        expect(result.metadata.required_citation).toBeDefined();
-        expect(typeof result.metadata.required_citation).toBe("string");
-        expect((result.metadata.required_citation as string).length).toBeGreaterThan(0);
+        const json = JSON.parse(result.content[1].text);
+        expect(json.provenance.citations).toBeDefined();
+        expect(json.provenance.citations.length).toBeGreaterThan(0);
     });
 
-    it("conflict forecasts response includes non-empty caveats", async () => {
+    it("conflict forecasts JSON includes provenance with caveats", async () => {
         const result = await handleConflictForecasts({}, mockViewsClient());
-        expect(result.metadata.caveats).toBeDefined();
-        expect((result.metadata.caveats as string[]).length).toBeGreaterThan(0);
+        const json = JSON.parse(result.content[1].text);
+        expect(json.provenance.caveats).toBeDefined();
+        expect(json.provenance.caveats.length).toBeGreaterThan(0);
     });
 
-    it("conflict forecasts response includes required_citation", async () => {
+    it("conflict forecasts JSON includes provenance with citations", async () => {
         const result = await handleConflictForecasts({}, mockViewsClient());
-        expect(result.metadata.required_citation).toBeDefined();
-        expect((result.metadata.required_citation as string).length).toBeGreaterThan(0);
+        const json = JSON.parse(result.content[1].text);
+        expect(json.provenance.citations).toBeDefined();
+        expect(json.provenance.citations.length).toBeGreaterThan(0);
     });
 
-    it("trajectory response includes non-empty caveats", async () => {
+    it("trajectory response text includes caveats section", async () => {
         const result = await handleTrajectoryAnalysis(
             { country_iso: "SYR", gwno: 652 },
             mockUcdpClient(),
             mockViewsClient(),
         );
-        expect(result.metadata.caveats).toBeDefined();
-        expect((result.metadata.caveats as string[]).length).toBeGreaterThan(0);
+        expect(result.content[0].text).toContain("CAVEATS");
     });
 
-    it("trajectory response includes required_citation", async () => {
+    it("trajectory response text includes citation section", async () => {
         const result = await handleTrajectoryAnalysis(
             { country_iso: "SYR", gwno: 652 },
             mockUcdpClient(),
             mockViewsClient(),
         );
-        expect(result.metadata.required_citation).toBeDefined();
-        expect((result.metadata.required_citation as string).length).toBeGreaterThan(0);
+        expect(result.content[0].text).toContain("REQUIRED CITATION");
     });
 });
 
