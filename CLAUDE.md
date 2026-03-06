@@ -42,6 +42,23 @@ All follow a four-section structure: A) setup/validation, B) fetch/aggregate, C)
 
 Screenshots for the README live in `docs/` (e.g., `docs/combined-report-screenshot.png`). To capture a new one: serve the HTML locally (`python3 -m http.server 8891` from `demo/`), open in Chrome, inject `html2canvas` from CDN via the Chrome extension's JavaScript tool, and trigger a download.
 
+## Anti-Hallucination Guardrails
+
+Three-layer defense preventing LLMs from misrepresenting conflict data:
+
+1. **SDK Envelopes** — `DataEnvelope<T>` wraps data with provenance, citations, caveats, interpretationNotes. Use `*Envelope()` methods (e.g., `getEventsEnvelope()`, `getCountryMonthEnvelope()`).
+2. **MCP Server** — Tool descriptions embed interpretation rules, prohibited language, and required attribution. Response text blocks include data type labels and caveats.
+3. **Skill** — `packages/skill/skill.md` has 8 mandatory rules for responsible data presentation.
+
+Design doc: `docs/anti-hallucination-guardrails.md`
+
+Run guardrails compliance tests:
+```bash
+npx vitest run packages/sdk/src/__tests__/envelope.test.ts packages/views/src/__tests__/envelope.test.ts packages/mcp-server/src/__tests__/guardrails.test.ts
+```
+
+CI generates a compliance report artifact via `.github/workflows/guardrails.yml`.
+
 ## Architecture Notes
 
 - UCDP and VIEWS data are joined on **Gleditsch-Ward country codes** (`gwnoa` in UCDP, `gwcode` in VIEWS)
