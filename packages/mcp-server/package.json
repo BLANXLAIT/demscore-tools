@@ -1,0 +1,42 @@
+{
+  "name": "@demscore/mcp-server",
+  "version": "0.1.0",
+  "description": "MCP server for conflict data with anti-hallucination guardrails",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "type": "module",
+  "bin": {
+    "demscore-mcp": "./dist/index.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest run",
+    "lint": "tsc --noEmit"
+  },
+  "keywords": [
+    "mcp",
+    "conflict",
+    "ucdp",
+    "views",
+    "guardrails"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/BLANXLAIT/demscore-tools.git",
+    "directory": "packages/mcp-server"
+  },
+  "dependencies": {
+    "@demscore/ucdp": "*",
+    "@demscore/views": "*",
+    "@modelcontextprotocol/sdk": "^1.15.0",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.0",
+    "vitest": "^3.0.0"
+  }
+}

@@ -1,0 +1,24 @@
+name: Guardrails Compliance
+on: [push, pull_request]
+
+jobs:
+  verify-guardrails:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm ci
+      - run: npm run build
+      - name: Run guardrails compliance tests
+        run: npx vitest run --reporter=verbose --reporter=json --outputFile=guardrails-report.json packages/sdk/src/__tests__/envelope.test.ts packages/views/src/__tests__/envelope.test.ts packages/mcp-server/src/__tests__/guardrails.test.ts
+      - name: Generate compliance report
+        if: always()
+        run: node scripts/generate-guardrails-report.js
+      - name: Upload compliance report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: guardrails-compliance-report
+          path: guardrails-report.md

@@ -20,6 +20,7 @@ import {
     latestCandidateVersion,
     candidateVersions,
 } from "./versions.js";
+import { createUcdpEnvelope, type DataEnvelope } from "./envelope.js";
 
 const DEFAULT_BASE_URL = "https://ucdpapi.pcr.uu.se/api";
 const DEFAULT_PAGE_SIZE = 100;
@@ -220,6 +221,45 @@ export class UcdpClient {
             version ?? LATEST_STABLE_VERSION,
             filters,
         );
+    }
+
+    // ── Envelope methods ─────────────────────────────────
+
+    /**
+     * Query GED events and wrap the result in a DataEnvelope with
+     * provenance metadata, citations, and interpretation guidance.
+     */
+    async getEventsEnvelope(
+        filters?: GedEventFilters,
+        version?: string,
+    ): Promise<DataEnvelope<GedEventRaw>> {
+        const v = version ?? LATEST_STABLE_VERSION;
+        const response = await this.request<GedEventRaw>("gedevents", v, filters);
+        return createUcdpEnvelope(response.Result, v, response.TotalCount);
+    }
+
+    /**
+     * Query GED Candidate events and wrap in a DataEnvelope.
+     * Automatically probes for the latest available candidate version.
+     */
+    async getCandidateEventsEnvelope(
+        filters?: GedEventFilters,
+    ): Promise<DataEnvelope<GedEventRaw>> {
+        const version = await this.probeVersion("gedevents");
+        const response = await this.request<GedEventRaw>("gedevents", version, filters);
+        return createUcdpEnvelope(response.Result, version, response.TotalCount);
+    }
+
+    /**
+     * Query armed conflicts and wrap in a DataEnvelope.
+     */
+    async getArmedConflictsEnvelope(
+        filters?: ArmedConflictFilters,
+        version?: string,
+    ): Promise<DataEnvelope<ArmedConflictRaw>> {
+        const v = version ?? LATEST_STABLE_VERSION;
+        const response = await this.request<ArmedConflictRaw>("ucdpprioconflict", v, filters);
+        return createUcdpEnvelope(response.Result, v, response.TotalCount);
     }
 
     // ── Internal methods ─────────────────────────────────
