@@ -8,6 +8,8 @@ TypeScript SDKs for conflict data and forecasting APIs from the [Demscore](https
 |---------|-------------|--------|
 | [`@demscore/ucdp`](packages/sdk) | TypeScript client for the [UCDP](https://ucdp.uu.se/) Conflict Data API | Beta |
 | [`@demscore/views`](packages/views) | TypeScript client for the [VIEWS](https://viewsforecasting.org/) Forecasting API | Beta |
+| [`@demscore/mcp-server`](packages/mcp-server) | MCP server for conflict data with anti-hallucination guardrails | Beta |
+| [`@demscore/skill`](packages/skill) | Claude Code skill for responsible conflict data presentation | Beta |
 
 ## Quick Start — UCDP (What happened)
 
@@ -85,6 +87,18 @@ This discovers the latest VIEWS fatalities model run, fetches country-level stat
 
 ![VIEWS Conflict Forecast Report](docs/views-demo-report-screenshot.png)
 
+## Anti-Hallucination Guardrails
+
+This project implements defense-in-depth guardrails to prevent LLMs from misrepresenting conflict data and forecasts. Conflict fatalities data is sensitive — forecasts must not be presented as facts, and uncertainty ranges must never be stripped.
+
+Three layers ensure caveats survive from API response to LLM-generated text:
+
+- **SDK Envelopes** — `DataEnvelope<T>` wrappers carry provenance metadata, required citations, data-specific caveats, and interpretation notes alongside every query result
+- **MCP Server** — Tool descriptions embed interpretation rules, prohibited language patterns, and required attribution that LLMs read at tool-discovery time
+- **Skill Instructions** — 8 mandatory rules governing language, uncertainty reporting, citation, and data freshness
+
+See [`docs/anti-hallucination-guardrails.md`](docs/anti-hallucination-guardrails.md) for the full design document with threat model and research references.
+
 ## UCDP API Access
 
 Request an API token at the [UCDP API docs](https://ucdp.uu.se/apidocs/). Rate limit: 5,000 requests/day.
@@ -106,6 +120,9 @@ UCDP datasets are licensed under [CC BY 4.0](https://creativecommons.org/license
 > Sundberg, Ralph and Erik Melander (2013). Introducing the UCDP Georeferenced Event Dataset. *Journal of Peace Research* 50(4).
 
 > UCDP is part of and funded by [DEMSCORE](https://demscore.com/), national research infrastructure grant 2021-00162 from the Swedish Research Council.
+
+**VIEWS Forecasting System:**
+> Hegre, Havard, et al. (2021). ViEWS2020: Revising and evaluating the ViEWS political violence early-warning system. *Journal of Peace Research* 58(3): 599-611.
 
 ## License
 

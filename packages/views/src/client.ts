@@ -7,6 +7,7 @@ import type {
     LevelOfAnalysis,
     ViolenceType,
 } from "./types.js";
+import { createViewsEnvelope, type DataEnvelope } from "./envelope.js";
 
 const DEFAULT_BASE_URL = "https://api.viewsforecasting.org";
 const DEFAULT_PAGE_SIZE = 1000;
@@ -61,6 +62,31 @@ export class ViewsClient {
         run = "current",
     ): AsyncGenerator<GridMonthRow> {
         yield* this.paginate<GridMonthRow>("pgm", { ...options, run });
+    }
+
+    // ── Envelope methods ─────────────────────────────────
+
+    /**
+     * Query country-month forecasts and wrap the result in a DataEnvelope
+     * with provenance metadata, citations, and interpretation guidance.
+     */
+    async getCountryMonthEnvelope(
+        options?: ViewsQueryOptions,
+        run = "current",
+    ): Promise<DataEnvelope<CountryMonthRow>> {
+        const response = await this.query<CountryMonthRow>("cm", { ...options, run });
+        return createViewsEnvelope(response.data, run, response.row_count);
+    }
+
+    /**
+     * Query grid-month forecasts and wrap in a DataEnvelope.
+     */
+    async getGridMonthEnvelope(
+        options?: ViewsQueryOptions,
+        run = "current",
+    ): Promise<DataEnvelope<GridMonthRow>> {
+        const response = await this.query<GridMonthRow>("pgm", { ...options, run });
+        return createViewsEnvelope(response.data, run, response.row_count);
     }
 
     // ── Full control methods ─────────────────────────────
